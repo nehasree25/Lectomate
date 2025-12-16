@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -10,21 +11,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-    try {
-      await axios.post(`${API_BASE}/api/auth/login`, { email, password });
-      setSuccess("Logged in successfully");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setError("");
+  setSuccess("");
+  setLoading(true);
+
+  try {
+    const res = await axios.post(
+      `${API_BASE}/api/auth/login`,
+      { email, password }
+    );
+    if (res.data?.token) {
+      localStorage.setItem("token", res.data.token);
+    } else {
+      throw new Error("Token not received");
     }
-  };
+
+    setSuccess("Logged in successfully");
+
+    navigate("/home");
+    
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="auth-card">
