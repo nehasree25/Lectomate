@@ -99,6 +99,21 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+from mongoengine import connect
+
+connect(
+    db="lectomate",
+    host="mongodb://localhost:27017/lectomate"
+)
+# settings.py
+REST_FRAMEWORK = {
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     "user.authentication.MongoJWTAuthentication",
+    # ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+}
 
 
 # Internationalization
