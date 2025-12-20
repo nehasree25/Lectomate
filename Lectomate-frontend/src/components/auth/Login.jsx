@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import authService from "../../services/authService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,32 +12,24 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
 
-  try {
-    const res = await axios.post(
-      `${API_BASE}/api/auth/login`,
-      { email, password }
-    );
-    if (res.data?.token) {
-      localStorage.setItem("token", res.data.token);
-    } else {
-      throw new Error("Token not received");
+    try {
+      await authService.login({ email, password });
+      
+      setSuccess("Logged in successfully");
+
+      navigate("/home");
+      
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-    setSuccess("Logged in successfully");
-
-    navigate("/home");
-    
-  } catch (err) {
-    setError(err.response?.data?.message || "Login failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   return (

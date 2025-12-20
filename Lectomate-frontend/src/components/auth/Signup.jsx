@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import authService from "../../services/authService";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -24,7 +22,7 @@ export default function Signup() {
     setSuccess("");
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/api/auth/signup`, formData);
+      await authService.register(formData);
       setSuccess("Account created successfully");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
